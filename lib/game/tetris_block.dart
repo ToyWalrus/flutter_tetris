@@ -53,4 +53,13 @@ class TetrisBlock {
   Pos get position => Pos(_x, _y);
   int get x => position.x;
   int get y => position.y;
+
+  bool operator ==(other) => 
+    other != null && 
+    other is TetrisBlock && 
+    this.x == other.x && 
+    this.y == other.y && 
+    this.displayColor == other.displayColor;     
+
+  int get hashCode => x * 120432 + y * 473852 + displayColor.hashCode;
 }

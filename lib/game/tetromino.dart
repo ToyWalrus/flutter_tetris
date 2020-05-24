@@ -303,4 +303,16 @@ class Tetromino {
     // If any of the blocks could not update, this function should return false.
     return !anyBlockCouldNotUpdate;
   }
+
+  bool operator ==(other) {
+    return other != null &&
+      other is Tetromino &&
+      this.shape == other.shape &&
+      this.blocks[0] == other.blocks[0] &&
+      this.blocks[1] == other.blocks[1] &&
+      this.blocks[2] == other.blocks[2] &&
+      this.blocks[3] == other.blocks[3];
+  }
+
+  int get hashCode => shape.hashCode * 3421 + blocks[0].hashCode + blocks[1].hashCode + blocks[2].hashCode + blocks[3].hashCode;
 }

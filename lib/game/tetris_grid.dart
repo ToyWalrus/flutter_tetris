@@ -64,5 +64,22 @@ class TetrisGrid {
       _occupiedAreas[block.x][block.y] = block;
     }
   }
-    
+
+  bool isDifferentThan(TetrisGrid other) {
+    if (this.width != other.width || this.height != other.height) return true;
+    for (int col = 0; col < width; ++col) {
+      for (int row = 0; row < height; ++row) {
+        final thisBlock = this._occupiedAreas[col][row];
+        final otherBlock = other._occupiedAreas[col][row];
+        if ((thisBlock == null && otherBlock != null) ||
+            (thisBlock != null && otherBlock == null)) {
+          return true;
+        }
+        if (thisBlock != null && thisBlock != otherBlock) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }    
 }
