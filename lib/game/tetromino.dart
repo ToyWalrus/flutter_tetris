@@ -5,7 +5,7 @@ import 'package:flutter_tetris/game/tetris_grid.dart';
 import 'package:flutter_tetris/game/tetromino_shapes.dart';
 
 class Tetromino {
-  final TetronimoShapes shape;
+  final TetrominoShapes shape;
   final TetrisGrid gameGrid;  
   List<TetrisBlock> blocks;
 
@@ -31,10 +31,10 @@ class Tetromino {
   /// block, the middle left block will
   /// be considered the spawn point.
   Tetromino({
-    @required Pos spawnPoint,
     @required this.shape,
     @required this.gameGrid
   }) {
+    final spawnPoint = gameGrid.spawnPoint;
     _rotation = 0;
     _initBlocks(spawnPoint.x, spawnPoint.y);
   }
@@ -58,43 +58,43 @@ class Tetromino {
   void _initBlocks(int x, int y) {
     blocks = List.filled(4, null);
     switch (shape) {
-      case TetronimoShapes.Square:
+      case TetrominoShapes.Square:
         blocks[0] = TetrisBlock(gameGrid, Pos(x, y), displayColor: color);
         blocks[1] = TetrisBlock(gameGrid, Pos(x + 1, y), displayColor: color);
         blocks[2] = TetrisBlock(gameGrid, Pos(x, y + 1), displayColor: color);
         blocks[3] = TetrisBlock(gameGrid, Pos(x + 1, y + 1), displayColor: color);
         break;
-      case TetronimoShapes.T:
+      case TetrominoShapes.T:
         blocks[0] = TetrisBlock(gameGrid, Pos(x - 1, y), displayColor: color);
         blocks[1] = TetrisBlock(gameGrid, Pos(x, y), displayColor: color);
         blocks[2] = TetrisBlock(gameGrid, Pos(x + 1, y), displayColor: color);
         blocks[3] = TetrisBlock(gameGrid, Pos(x, y + 1), displayColor: color);
         break;
-      case TetronimoShapes.L:
+      case TetrominoShapes.L:
         blocks[0] = TetrisBlock(gameGrid, Pos(x, y + 1), displayColor: color);
         blocks[1] = TetrisBlock(gameGrid, Pos(x, y), displayColor: color);
         blocks[2] = TetrisBlock(gameGrid, Pos(x, y - 1), displayColor: color);
         blocks[3] = TetrisBlock(gameGrid, Pos(x + 1, y - 1), displayColor: color);
         break;
-      case TetronimoShapes.Back_L:
+      case TetrominoShapes.Back_L:
         blocks[0] = TetrisBlock(gameGrid, Pos(x, y + 1), displayColor: color);
         blocks[1] = TetrisBlock(gameGrid, Pos(x, y), displayColor: color);
         blocks[2] = TetrisBlock(gameGrid, Pos(x, y - 1), displayColor: color);
         blocks[3] = TetrisBlock(gameGrid, Pos(x - 1, y - 1), displayColor: color);
         break;
-      case TetronimoShapes.Back_Z:
+      case TetrominoShapes.Back_Z:
         blocks[0] = TetrisBlock(gameGrid, Pos(x - 1, y - 1), displayColor: color);
         blocks[1] = TetrisBlock(gameGrid, Pos(x, y - 1), displayColor: color);
         blocks[2] = TetrisBlock(gameGrid, Pos(x, y), displayColor: color);
         blocks[3] = TetrisBlock(gameGrid, Pos(x + 1, y), displayColor: color);
         break;
-      case TetronimoShapes.Z:
+      case TetrominoShapes.Z:
         blocks[0] = TetrisBlock(gameGrid, Pos(x - 1, y), displayColor: color);
         blocks[1] = TetrisBlock(gameGrid, Pos(x, y), displayColor: color);
         blocks[2] = TetrisBlock(gameGrid, Pos(x, y - 1), displayColor: color);
         blocks[3] = TetrisBlock(gameGrid, Pos(x + 1, y - 1), displayColor: color);
         break;
-      case TetronimoShapes.Line:
+      case TetrominoShapes.Line:
         blocks[0] = TetrisBlock(gameGrid, Pos(x - 1, y), displayColor: color);
         blocks[1] = TetrisBlock(gameGrid, Pos(x, y), displayColor: color);
         blocks[2] = TetrisBlock(gameGrid, Pos(x + 1, y), displayColor: color);
@@ -128,9 +128,9 @@ class Tetromino {
     final blockPositions = List.generate(4, (i) => blocks[i].position);
     final successes = <bool>[];
     switch (shape) {
-      case TetronimoShapes.Square:
+      case TetrominoShapes.Square:
         return true;
-      case TetronimoShapes.T:
+      case TetrominoShapes.T:
         // Block order for rotation 0:
         // left = 0, middle = 1, right = 2, top = 3
         Pos leftBlockPos = blockPositions[0];
@@ -172,7 +172,7 @@ class Tetromino {
           }
         }
         break;
-      case TetronimoShapes.L:
+      case TetrominoShapes.L:
         // Block order for rotation 0:
         // top = 0, middle = 1, bottom = 2, bottom right = 3
         Pos midBlockPos = blockPositions[1];
@@ -202,7 +202,7 @@ class Tetromino {
           ]);
         }
         break;
-      case TetronimoShapes.Back_L:
+      case TetrominoShapes.Back_L:
         // Block order for rotation 0:
         // top = 0, middle = 1, bottom = 2, bottom left = 3
         Pos midBlockPos = blockPositions[1];
@@ -232,7 +232,7 @@ class Tetromino {
           ]);
         }
         break;
-      case TetronimoShapes.Z:
+      case TetrominoShapes.Z:
         // Block order for rotation 0:
         // left = 0, middle = 1, bottom = 2, bottom right = 3
         Pos midBlockPos = blockPositions[1];
@@ -250,7 +250,7 @@ class Tetromino {
           ]);
         }
         break;
-      case TetronimoShapes.Back_Z:
+      case TetrominoShapes.Back_Z:
         // Block order for rotation 0:
         // bottom left = 0, bottom = 1, middle = 2, right = 3
         Pos midBlockPos = blockPositions[2];
@@ -267,7 +267,7 @@ class Tetromino {
             blocks[3].tryUpdatePosition(midBlockPos.offsetY(1))
           ]);
         }        break;
-      case TetronimoShapes.Line:
+      case TetrominoShapes.Line:
         // Mid block for line is block[1]
         Pos midBlockPos = blockPositions[1];
 

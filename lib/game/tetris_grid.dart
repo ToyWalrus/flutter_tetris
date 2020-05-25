@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tetris/game/pos.dart';
 import 'package:flutter_tetris/game/tetris_block.dart';
 import 'package:flutter_tetris/game/tetromino.dart';
 
@@ -11,6 +12,8 @@ class TetrisGrid {
   /// positions that have been settled (i.e.
   /// not being controlled)
   List<List<TetrisBlock>> _occupiedAreas;
+
+  Pos get spawnPoint => Pos(width ~/ 2, height - 1);
 
   /// Create a new `TetrisGrid` with the
   /// given [width] and [height]. The
@@ -34,8 +37,9 @@ class TetrisGrid {
   bool isOffGrid(int col, int row) => col < 0 || col >= width || row < 0 || row >= height;
 
   /// Clears the given row and shifts all blocks above
-  /// the given row down by one. _Note that this does
-  /// not check whether the row is full or not._
+  /// the given row down by one. Note that this does
+  /// not check whether the row is full or not. For
+  /// that, call `isRowFull()`.
   void clearRow(int row) {
     for (int i = row; i < height; ++i) {
       if (i != height - 1) {
@@ -52,6 +56,15 @@ class TetrisGrid {
     for (int col = 0; col < width; ++col) {
       _occupiedAreas[col][height - 1] = null;
     }
+  }
+
+  /// Checks whether the given row is full and
+  /// ready to be cleared.
+  bool isRowFull(int row) {
+    for (int col = 0; col < width; ++col) {
+      if (!isOccupiedSpace(col, row)) return false;
+    }
+    return true;
   }
 
   /// To be called when the [currentPiece]

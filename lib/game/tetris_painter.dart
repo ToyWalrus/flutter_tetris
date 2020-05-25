@@ -89,5 +89,8 @@ class TetrisPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(TetrisPainter oldPainter) => currentPiece != oldPainter.currentPiece || grid.isDifferentThan(oldPainter.grid);
+  bool shouldRepaint(TetrisPainter oldPainter) => 
+    currentPiece != oldPainter.currentPiece || 
+    grid.isDifferentThan(oldPainter.grid) ||
+    backgroundColor != oldPainter.backgroundColor;
 }
