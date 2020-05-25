@@ -39,6 +39,12 @@ class Tetromino {
     _initBlocks(spawnPoint.x, spawnPoint.y);
   }
 
+  /// Creates a shallow copy of a Tetromino piece.
+  Tetromino.clone(Tetromino other) : shape = other.shape, gameGrid = other.gameGrid {
+    _rotation = other._rotation;
+    blocks = List.from(other.blocks);
+  }
+
   // See rotations here https://strategywiki.org/wiki/File:Tetris_rotation_Nintendo.png
 
   bool rotateRight() {
