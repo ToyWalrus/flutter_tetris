@@ -35,7 +35,7 @@ class Tetromino {
     @required this.gameGrid,
     bool spawn = true
   }) {
-    final spawnPoint = spawn ? gameGrid.spawnPoint : Pos(1, 1);
+    final spawnPoint = spawn ? gameGrid.spawnPoint : _getCustomSpawnPoint();
     _rotation = 0;
     _initBlocks(spawnPoint.x, spawnPoint.y);
   }
@@ -309,6 +309,14 @@ class Tetromino {
     
     // If any of the blocks could not update, this function should return false.
     return !anyBlockCouldNotUpdate;
+  }
+
+  Pos _getCustomSpawnPoint() {
+    switch(shape) {
+      case TetrominoShapes.Square: return Pos(0, 0);
+      case TetrominoShapes.L: return Pos(0, 1);
+      default: return Pos(1, 1);
+    }
   }
 
   bool operator ==(other) {

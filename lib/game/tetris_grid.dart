@@ -6,6 +6,8 @@ import 'package:flutter_tetris/game/tetromino.dart';
 class TetrisGrid {
   final int width;
   final int height;
+  bool get overflowedTop => _overflowedTop;
+  bool _overflowedTop;
 
   /// Indexed as (column, row), or (x, y).
   /// This 2D array holds all of the block
@@ -23,8 +25,14 @@ class TetrisGrid {
     @required this.width,
     @required this.height
   }) {
-    List<TetrisBlock> initColumn() => List.filled(height, null);
-    _occupiedAreas = List.filled(width, initColumn());
+    _overflowedTop = false;
+    _occupiedAreas = [];
+    for (int x = 0; x < width; ++x) {
+      _occupiedAreas.add([]);
+      for (int y = 0; y < height; ++y) {
+        _occupiedAreas[x].add(null);
+      }
+    }
   }
 
   /// Returns the current state of the grid.
@@ -73,6 +81,11 @@ class TetrisGrid {
   /// the grid.
   void addBlocks(Tetromino currentPiece) {
     for (TetrisBlock block in currentPiece.blocks) {
+      if (block.y >= height) {
+        print('GAME OVER!');
+        _overflowedTop = true;
+        return;
+      }
       assert(!isOccupiedSpace(block.x, block.y));
       _occupiedAreas[block.x][block.y] = block;
     }

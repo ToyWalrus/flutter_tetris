@@ -22,7 +22,7 @@ class TetrominoController extends StatelessWidget {
           child: CustomButton.text(
               text: 'Speed up',
               textSize: 20,
-              onPress: () => null, //gameDriver.movePieceDown(),
+              onPress: () => gameDriver.movePieceDown(),
               buttonActiveColor: Colors.blue,
               buttonInactiveColor: Colors.white))
     ]);
@@ -36,8 +36,7 @@ class TetrominoController extends StatelessWidget {
         child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           CustomButton.icon(
             icon: Icons.arrow_back,
-            onPress: () => null,
-            //gameDriver.movePieceLeft(),
+            onPress: () => gameDriver.movePieceLeft(),
             buttonInactiveColor: inactiveIconColor,
             buttonActiveColor: activeIconColor,
             iconSize: 40,
@@ -47,24 +46,21 @@ class TetrominoController extends StatelessWidget {
               origin: Offset(20, 20),
               child: CustomButton.icon(
                 icon: Icons.refresh,
-                onPress: () => null,
-                //gameDriver.rotatePieceLeft(),
+                onPress: () => gameDriver.rotatePieceLeft(),
                 buttonInactiveColor: inactiveIconColor,
                 buttonActiveColor: activeIconColor,
                 iconSize: 40,
               )),
           CustomButton.icon(
             icon: Icons.refresh,
-            onPress: () => null,
-            //gameDriver.rotatePieceRight(),
+            onPress: () => gameDriver.rotatePieceRight(),
             buttonInactiveColor: inactiveIconColor,
             buttonActiveColor: activeIconColor,
             iconSize: 40,
           ),
           CustomButton.icon(
             icon: Icons.arrow_forward,
-            onPress: () => null,
-            //gameDriver.movePieceRight(),
+            onPress: () => gameDriver.movePieceRight(),
             buttonInactiveColor: inactiveIconColor,
             buttonActiveColor: activeIconColor,
             iconSize: 40,

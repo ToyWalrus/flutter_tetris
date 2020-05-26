@@ -61,8 +61,9 @@ class _CustomButtonState extends State<CustomButton> {
 
           buttonHeldTimer?.cancel();
           // debounce the first press
-          buttonHeldTimer = Timer.periodic(Duration(milliseconds: 100), (timer) {
-            buttonHeldTimer = Timer.periodic(Duration(milliseconds: 10), (_) => widget.onPress());
+          buttonHeldTimer = Timer.periodic(Duration(milliseconds: 500), (timer) {
+            buttonHeldTimer.cancel();
+            buttonHeldTimer = Timer.periodic(Duration(milliseconds: 300), (_) => widget.onPress());
           });
         },
         onTapUp: (_) {

@@ -27,52 +27,44 @@ class _GameScreenState extends State<GameScreen> {
   void initState() {
     super.initState();
     grid = TetrisGrid(height: widget.numRows, width: widget.numColumns);
-    gameDriver = GameDriver(grid: grid, onUpdate: () => setState((){}), tickInterval: 1000);
+    gameDriver = GameDriver(grid: grid, onUpdate: () => setState(() {}), tickInterval: 1000);
     Future.delayed(Duration(milliseconds: 500)).then(_showStartGameDialog);
+  }
+
+  @override
+  void dispose() {
+    gameDriver.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     return Scaffold(
-        body: Column(children: [
-      Expanded(child: _buildTopArea()),
-      _buildGameView(screenSize.width, screenSize.height * .75),
-      Expanded(child: TetrominoController(gameDriver))
-    ]));
-  }
-
-  Widget _buildTopArea() {
-    final iconSize = 20.0;
-    return Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: IconButton(
-              onPressed: _onCloseGameScreen,
-              icon: Icon(Icons.close, size: iconSize),
+        appBar: AppBar(
+          elevation: 0,
+          brightness: Brightness.light,
+          backgroundColor: Colors.white,
+          leading: IconButton(
+              onPressed: _onCloseGameScreen, icon: Icon(Icons.close), color: Colors.black),
+          title: _buildNextTetrominoView(),
+          actions: [
+            IconButton(
+              onPressed: gameDriver.isActive ? _pauseGame : null,
+              icon: Icon(Icons.pause),
+              color: Colors.black,
             ),
-          ),
-          Expanded(child: _buildNextTetrominoView()),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            width: 150,
-            child: Row(
-              children: [
-                IconButton(
-                  onPressed: gameDriver.isActive ?  _pauseGame : null,
-                  icon: Icon(Icons.pause, size: iconSize)
-                ),
-                IconButton(
-                  onPressed: gameDriver.isActive ? null : _resumeGame,
-                  icon: Icon(Icons.play_arrow, size: iconSize)
-                )
-              ]
+            IconButton(
+              onPressed: gameDriver.isActive ? null : _resumeGame,
+              icon: Icon(Icons.play_arrow),
+              color: Colors.black,
             )
-          )
-        ]);
+          ],
+        ),
+        body: Column(children: [
+          _buildGameView(screenSize.width, screenSize.height * .75),
+          Expanded(child: TetrominoController(gameDriver))
+        ]));
   }
 
   Widget _buildGameView(double width, double height) {
@@ -90,9 +82,12 @@ class _GameScreenState extends State<GameScreen> {
   Widget _buildNextTetrominoView() {
     return Row(
         crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('Next:', style: TextStyle(fontWeight: FontWeight.bold)),
+          Padding(
+            padding: EdgeInsets.only(right: 10),
+            child: Text('Next:', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black))
+          ),
           CustomPaint(
             painter: _NextTetrominoPainter(nextShape, blockSizeRatio),
             size: Size.square(50),
@@ -105,27 +100,31 @@ class _GameScreenState extends State<GameScreen> {
     Navigator.of(context).pop();
   }
 
-  void _pauseGame() => gameDriver.stopGame();
-  void _resumeGame() => gameDriver.resumeGame();
+  void _pauseGame() {
+    setState(() {
+      gameDriver.stopGame();
+    });
+  }
+
+  void _resumeGame() {
+    setState(() {
+      gameDriver.resumeGame();
+    });
+  }
 
   void _showStartGameDialog(_) {
     showDialog(
-      context: context,
-      barrierDismissible: false,
-      child: AlertDialog(
-        title: Text('Ready?'),
-        actions: [
+        context: context,
+        barrierDismissible: false,
+        child: AlertDialog(title: Text('Ready?'), actions: [
           FlatButton(
-            onPressed: () async {
-              Navigator.of(context).pop();
-              await Future.delayed(Duration(milliseconds: 500));
-              gameDriver.startGame();
-            },
-            child: Text('Start')
-          )
-        ]
-      )
-    );
+              onPressed: () async {
+                Navigator.of(context).pop();
+                await Future.delayed(Duration(milliseconds: 500));
+                gameDriver.startGame();
+              },
+              child: Text('Start'))
+        ]));
   }
 }
 

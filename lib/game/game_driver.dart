@@ -34,20 +34,31 @@ class GameDriver {
   /// being controlled by the player.
   Tetromino get currentPiece => Tetromino.clone(_currentPiece);
 
+  /// Whether the game has ended.
+  bool get gameOver => grid.overflowedTop;
+
   Tetromino _currentPiece;
   int _currentScoreInternal;
   Timer _gameTimer;
-  Timer _moveActionTimer;
-  Timer _rotationActionTimer;
+//  Timer _moveActionTimer;
+//  Timer _rotationActionTimer;
   Duration get _tickDuration => Duration(milliseconds: tickInterval);
-  Duration get _moveActionInterval => Duration(milliseconds: 200);
-  Duration get _rotationActionInterval => Duration(milliseconds: 100);
+//  Duration get _moveActionInterval => Duration(milliseconds: 200);
+//  Duration get _rotationActionInterval => Duration(milliseconds: 100);
 
   /// Create a new `GameDriver` instance. Each `GameDriver`
   /// represents its own game.
   GameDriver({@required this.onUpdate, @required this.grid, this.tickInterval = 1000}) {
     nextShape = _getNextShape();
     _currentPiece = Tetromino(shape: nextShape, gameGrid: grid, spawn: false);
+  }
+
+  /// To be called when the widget containing
+  /// this is disposed.
+  void dispose() {
+    _gameTimer?.cancel();
+//    _moveActionTimer?.cancel();
+//    _rotationActionTimer?.cancel();
   }
 
   void startGame() {
@@ -57,53 +68,51 @@ class GameDriver {
   }
 
   void resumeGame() {
-    if (_gameTimer?.isActive == false) {
+    if (!isActive && !gameOver) {
       _gameTimer = Timer.periodic(_tickDuration, _onTick);
     }
   }
 
   void stopGame() {
-    if (_gameTimer.isActive) {
+    if (isActive) {
       _gameTimer.cancel();
     }
   }
 
   void movePieceRight() {
-    if (_moveActionTimer?.isActive == true) return;
+    if (gameOver) return;
     if (_currentPiece.moveRight()) {
-      _moveActionTimer = Timer(_moveActionInterval, (){});
       onUpdate();
     }
   }
 
   void movePieceLeft() {
-    if (_moveActionTimer?.isActive == true) return;
+    if (gameOver) return;
     if (_currentPiece.moveLeft()) {
-      _moveActionTimer = Timer(_moveActionInterval, (){});
       onUpdate();
     }
   }
 
   void rotatePieceRight() {
-    if (_rotationActionTimer?.isActive == true) return;
+    if (gameOver) return;
     if (_currentPiece.rotateRight()) {
-      _rotationActionTimer = Timer(_rotationActionInterval, (){});
       onUpdate();
     }
   }
 
   void rotatePieceLeft() {
-    if (_rotationActionTimer?.isActive == true) return;
+    if (gameOver) return;
     if (_currentPiece.rotateLeft()) {
-      _rotationActionTimer = Timer(_rotationActionInterval, (){});
       onUpdate();
     }
   }
 
   /// Manually move the piece down before the end of the tick.
   void movePieceDown() {
+    if (gameOver) return;
     _movePieceDownInternal();
     // reset the tick
+    _gameTimer?.cancel();
     _gameTimer = Timer.periodic(_tickDuration, _onTick);
   }
 
@@ -141,13 +150,15 @@ class GameDriver {
   void _spawnNewTetromino() {
     _currentPiece = Tetromino(shape: nextShape, gameGrid: grid);
     nextShape = _getNextShape();
-    _rotationActionTimer?.cancel();
-    _moveActionTimer?.cancel();
+    _gameTimer?.cancel();
     _gameTimer = Timer.periodic(_tickDuration, _onTick);
   }
 
   void _onTick(Timer t) {
     _movePieceDownInternal();
+    if (grid.overflowedTop) {
+      _gameTimer.cancel();
+    }
   }
 
   TetrominoShapes _getNextShape() {
