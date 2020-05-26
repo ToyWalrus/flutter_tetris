@@ -24,6 +24,9 @@ class GameDriver {
   /// row clear awards 100 points.
   int get currentScore => _currentScoreInternal;
 
+  /// Whether the game is currently running.
+  bool get isActive => _gameTimer?.isActive == true;
+
   /// The next shape to be spawned.
   TetrominoShapes nextShape;
 
@@ -42,13 +45,21 @@ class GameDriver {
 
   /// Create a new `GameDriver` instance. Each `GameDriver`
   /// represents its own game.
-  GameDriver({@required this.onUpdate, @required this.grid, this.tickInterval = 1000});
+  GameDriver({@required this.onUpdate, @required this.grid, this.tickInterval = 1000}) {
+    nextShape = _getNextShape();
+    _currentPiece = Tetromino(shape: nextShape, gameGrid: grid, spawn: false);
+  }
 
   void startGame() {
     _currentScoreInternal = 0;
-    nextShape = _getNextShape();
     _spawnNewTetromino();
     onUpdate();
+  }
+
+  void resumeGame() {
+    if (_gameTimer?.isActive == false) {
+      _gameTimer = Timer.periodic(_tickDuration, _onTick);
+    }
   }
 
   void stopGame() {
@@ -97,8 +108,10 @@ class GameDriver {
   }
 
   void _movePieceDownInternal() {
+    print('Move ${_currentPiece.shape} piece down');
     final couldMoveDown = _currentPiece.moveDown();
     if (!couldMoveDown) {
+      print('Reached bottom');
       grid.addBlocks(_currentPiece);
       _spawnNewTetromino();
       _clearCompletedRows();

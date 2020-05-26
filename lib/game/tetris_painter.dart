@@ -21,7 +21,7 @@ class TetrisPainter extends CustomPainter {
     final cellWidth = canvasSize.width / grid.width;
     final cellHeight = canvasSize.height / grid.height;
     final cellSize = Size(cellWidth, cellHeight);
-    final blockSize = Size(cellSize.width * blockSizeFractionOfCell, cellSize.height * blockSizeFractionOfCell);
+    final blockSize = cellSize * blockSizeFractionOfCell; // Size(cellSize.width * blockSizeFractionOfCell, cellSize.height * blockSizeFractionOfCell);
 
     // Sets the canvas so that (0,0) is bottom left
     canvas.translate(0, canvasSize.height);
@@ -38,7 +38,8 @@ class TetrisPainter extends CustomPainter {
 
     final blockGrid = grid.getGrid();
     for (final column in blockGrid) {
-      for (final block in column) {        
+      for (final block in column) {
+        if (block == null) continue;
         final cellCenterX = cellSize.width * block.x + cellCenterOffsetX;
         final cellCenterY = cellSize.height * block.y + cellCenterOffsetY;
         _drawBlock(canvas, block, cellCenterX, cellCenterY, blockSize);
@@ -77,15 +78,20 @@ class TetrisPainter extends CustomPainter {
       ..strokeWidth = 1
       ..color = Colors.black87;
 
-    for (int i = 1; i <= numVerticalLines; ++i) {
-      final xOffset = cellSize.width * i;
-      canvas.drawLine(Offset(xOffset, 0), Offset(xOffset, canvasSize.height), lineStroke);
-    }
+    canvas.drawLine(Offset(0,0), Offset(canvasSize.width, 0), lineStroke);
+    canvas.drawLine(Offset(canvasSize.width, 0), Offset(canvasSize.width, canvasSize.height), lineStroke);
+    canvas.drawLine(Offset(canvasSize.width, canvasSize.height), Offset(0, canvasSize.height), lineStroke);
+    canvas.drawLine(Offset(0,canvasSize.height), Offset(0, 0), lineStroke);
 
-    for (int i = 1; i <= numHorizontalLines; ++i) {
-      final yOffset = cellSize.height * i;
-      canvas.drawLine(Offset(0, yOffset), Offset(canvasSize.width, yOffset), lineStroke);
-    }
+//    for (int i = 0; i < numVerticalLines + 1; ++i) {
+//      final xOffset = cellSize.width * i;
+//      canvas.drawLine(Offset(xOffset, 0), Offset(xOffset, canvasSize.height), lineStroke);
+//    }
+//
+//    for (int i = 0; i < numHorizontalLines + 1; ++i) {
+//      final yOffset = cellSize.height * i;
+//      canvas.drawLine(Offset(0, yOffset), Offset(canvasSize.width, yOffset), lineStroke);
+//    }
   }
 
   @override

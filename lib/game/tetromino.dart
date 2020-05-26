@@ -32,9 +32,10 @@ class Tetromino {
   /// be considered the spawn point.
   Tetromino({
     @required this.shape,
-    @required this.gameGrid
+    @required this.gameGrid,
+    bool spawn = true
   }) {
-    final spawnPoint = gameGrid.spawnPoint;
+    final spawnPoint = spawn ? gameGrid.spawnPoint : Pos(1, 1);
     _rotation = 0;
     _initBlocks(spawnPoint.x, spawnPoint.y);
   }

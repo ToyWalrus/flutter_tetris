@@ -4,17 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tetris/custom_button.dart';
 import 'package:flutter_tetris/game/game_driver.dart';
 
-class TetrominoController extends StatefulWidget {
+class TetrominoController extends StatelessWidget {
   final GameDriver gameDriver;
-
-  const TetrominoController({@required this.gameDriver});
-
-  @override
-  _TetrominoControllerState createState() => _TetrominoControllerState();
-}
-
-class _TetrominoControllerState extends State<TetrominoController> {
-  GameDriver get gameDriver => widget.gameDriver;
+  const TetrominoController(this.gameDriver);
 
   @override
   Widget build(BuildContext context) {

@@ -20,7 +20,7 @@ class TetrisBlock {
   bool tryUpdatePosition(Pos newPos) {
     int x = newPos.x;
     int y = newPos.y;
-    if (gameGrid.isOccupiedSpace(x, y) || gameGrid.isOffGrid(x, y)) {
+    if (gameGrid.isOffGrid(x, y) || gameGrid.isOccupiedSpace(x, y)) {
       return false;
     }
     setPosition(newPos);
@@ -34,7 +34,7 @@ class TetrisBlock {
   bool tryOffsetPosition(int xAmt, int yAmt) {
     int x = this.x + xAmt;
     int y = this.y + yAmt;
-    if (gameGrid.isOccupiedSpace(x, y) || gameGrid.isOffGrid(x, y)) {
+    if (gameGrid.isOffGrid(x, y) || gameGrid.isOccupiedSpace(x, y)) {
       return false;
     }
     setPosition(Pos(x, y));

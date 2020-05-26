@@ -25,9 +25,8 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildAnimatedBackground(BuildContext context) {
-    final primaryColor = Theme.of(context).primaryColorLight; //withAlpha(100);
     return Container(
-      color: primaryColor
+      color: Colors.white
     );
   }
 
