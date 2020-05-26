@@ -23,7 +23,7 @@ class TetrominoController extends StatelessWidget {
           child: CustomButton.text(
               text: 'Speed up',
               textSize: 20,
-              onPress: () => gameDriver.movePieceDown(),
+              onPress: _buttonsActive ? gameDriver.movePieceDown : null,
               buttonActiveColor: Colors.blue,
               buttonInactiveColor: Colors.white))
     ]);

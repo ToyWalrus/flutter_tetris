@@ -28,7 +28,7 @@ class _GameScreenState extends State<GameScreen> {
     super.initState();
     grid = TetrisGrid(height: widget.numRows, width: widget.numColumns);
     gameDriver = GameDriver(grid: grid, tickInterval: 1000)
-      ..addListener(() => setState(() {}));
+      ..addListener(() => setState(() {})); // this listener is so that the next shape painter updates when it's supposed to
     Future.delayed(Duration(milliseconds: 500)).then(_showStartGameDialog);
   }
 
@@ -86,23 +86,24 @@ class _GameScreenState extends State<GameScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Spacer(),
           Padding(
             padding: EdgeInsets.only(right: 10),
             child: Text('Next:', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black))
           ),
-          Padding(
-            padding: const EdgeInsets.only(right: 4),
-            child: CustomPaint(
-              painter: _NextTetrominoPainter(nextShape, blockSizeRatio),
-              size: Size.square(50),
-            ),
+          CustomPaint(
+            painter: _NextTetrominoPainter(nextShape, blockSizeRatio),
+            size: Size.square(50),
           ),
+          Spacer(),
           Text('Score: ${gameDriver.currentScore}',
               style: TextStyle(
-                  fontStyle: FontStyle.italic,
-                  fontSize: 14
+                fontStyle: FontStyle.italic,
+                fontSize: 14,
+                color: Colors.blueGrey
               )
-          )
+          ),
+          Spacer()
         ]);
   }
 

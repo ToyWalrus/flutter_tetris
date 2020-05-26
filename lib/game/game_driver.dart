@@ -48,8 +48,9 @@ class GameDriver extends ValueNotifier<Tetromino> {
   /// represents its own game.
   GameDriver({@required this.grid, this.tickInterval = 1000}) : super(null) {
     nextShape = _getNextShape();
-    _hasStartedInternal = false;
     _paused = false;
+    _hasStartedInternal = false;
+    _currentScoreInternal = 0;
     _currentPiece = Tetromino(shape: nextShape, gameGrid: grid, spawn: false);
   }
 
@@ -62,7 +63,6 @@ class GameDriver extends ValueNotifier<Tetromino> {
   }
 
   void startGame() {
-    _currentScoreInternal = 0;
     _hasStartedInternal = true;
     _spawnNewTetromino();
     notifyListeners();
