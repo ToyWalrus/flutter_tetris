@@ -27,7 +27,8 @@ class _GameScreenState extends State<GameScreen> {
   void initState() {
     super.initState();
     grid = TetrisGrid(height: widget.numRows, width: widget.numColumns);
-    gameDriver = GameDriver(grid: grid, onUpdate: () => setState(() {}), tickInterval: 1000);
+    gameDriver = GameDriver(grid: grid, tickInterval: 1000)
+      ..addListener(() => setState(() {}));
     Future.delayed(Duration(milliseconds: 500)).then(_showStartGameDialog);
   }
 
@@ -48,6 +49,7 @@ class _GameScreenState extends State<GameScreen> {
           leading: IconButton(
               onPressed: _onCloseGameScreen, icon: Icon(Icons.close), color: Colors.black),
           title: _buildNextTetrominoView(),
+          centerTitle: true,
           actions: [
             IconButton(
               onPressed: gameDriver.isActive ? _pauseGame : null,
@@ -69,14 +71,14 @@ class _GameScreenState extends State<GameScreen> {
 
   Widget _buildGameView(double width, double height) {
     return CustomPaint(
-      size: Size(width, height),
-      painter: TetrisPainter(
-        grid: grid,
-        currentPiece: gameDriver.currentPiece,
-        blockSizeFractionOfCell: blockSizeRatio,
-        backgroundColor: Colors.white
-      ),
-    );
+          size: Size(width, height),
+          painter: TetrisPainter(
+              grid: grid,
+              notifier: gameDriver,
+              blockSizeFractionOfCell: blockSizeRatio,
+              backgroundColor: Colors.white
+          ),
+        );
   }
 
   Widget _buildNextTetrominoView() {
@@ -88,9 +90,18 @@ class _GameScreenState extends State<GameScreen> {
             padding: EdgeInsets.only(right: 10),
             child: Text('Next:', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black))
           ),
-          CustomPaint(
-            painter: _NextTetrominoPainter(nextShape, blockSizeRatio),
-            size: Size.square(50),
+          Padding(
+            padding: const EdgeInsets.only(right: 4),
+            child: CustomPaint(
+              painter: _NextTetrominoPainter(nextShape, blockSizeRatio),
+              size: Size.square(50),
+            ),
+          ),
+          Text('Score: ${gameDriver.currentScore}',
+              style: TextStyle(
+                  fontStyle: FontStyle.italic,
+                  fontSize: 14
+              )
           )
         ]);
   }
@@ -168,6 +179,5 @@ class _NextTetrominoPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_NextTetrominoPainter oldDelegate) =>
-      piece != oldDelegate.piece || blockSizeRatio != oldDelegate.blockSizeRatio;
+  bool shouldRepaint(_NextTetrominoPainter oldDelegate) => true;
 }

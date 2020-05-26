@@ -6,6 +6,7 @@ import 'package:flutter_tetris/game/game_driver.dart';
 
 class TetrominoController extends StatelessWidget {
   final GameDriver gameDriver;
+  bool get _buttonsActive => gameDriver.isActive;
   const TetrominoController(this.gameDriver);
 
   @override
@@ -36,7 +37,7 @@ class TetrominoController extends StatelessWidget {
         child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           CustomButton.icon(
             icon: Icons.arrow_back,
-            onPress: () => gameDriver.movePieceLeft(),
+            onPress: _buttonsActive ? gameDriver.movePieceLeft : null,
             buttonInactiveColor: inactiveIconColor,
             buttonActiveColor: activeIconColor,
             iconSize: 40,
@@ -46,21 +47,21 @@ class TetrominoController extends StatelessWidget {
               origin: Offset(20, 20),
               child: CustomButton.icon(
                 icon: Icons.refresh,
-                onPress: () => gameDriver.rotatePieceLeft(),
+                onPress: _buttonsActive ? gameDriver.rotatePieceLeft : null,
                 buttonInactiveColor: inactiveIconColor,
                 buttonActiveColor: activeIconColor,
                 iconSize: 40,
               )),
           CustomButton.icon(
             icon: Icons.refresh,
-            onPress: () => gameDriver.rotatePieceRight(),
+            onPress: _buttonsActive ? gameDriver.rotatePieceRight : null,
             buttonInactiveColor: inactiveIconColor,
             buttonActiveColor: activeIconColor,
             iconSize: 40,
           ),
           CustomButton.icon(
             icon: Icons.arrow_forward,
-            onPress: () => gameDriver.movePieceRight(),
+            onPress: _buttonsActive ? gameDriver.movePieceRight : null,
             buttonInactiveColor: inactiveIconColor,
             buttonActiveColor: activeIconColor,
             iconSize: 40,

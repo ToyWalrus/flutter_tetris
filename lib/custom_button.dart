@@ -12,6 +12,7 @@ class CustomButton extends StatefulWidget {
   final double textSize;
   final Color buttonInactiveColor;
   final Color buttonActiveColor;
+  final Color buttonDisabledColor;
   final IconData icon;
   final double iconSize;
 
@@ -19,19 +20,23 @@ class CustomButton extends StatefulWidget {
   const CustomButton.text(
       {@required this.text,
       @required this.onPress,
-        this.textSize = 24,
+      this.textSize = 24,
       this.buttonInactiveColor = Colors.white,
+      this.buttonDisabledColor = Colors.grey,
       this.buttonActiveColor = const Color.fromRGBO(20, 20, 20, 1)})
-      : icon = null, iconSize = 0;
+      : icon = null,
+        iconSize = 0;
 
   /// Create a new icon button.
   const CustomButton.icon(
       {@required this.icon,
       @required this.onPress,
       this.iconSize = 24,
+      this.buttonDisabledColor = Colors.grey,
       this.buttonInactiveColor = Colors.black54,
       this.buttonActiveColor = Colors.black})
-      : text = null, textSize = 0;
+      : text = null,
+        textSize = 0;
 
   @override
   _CustomButtonState createState() => _CustomButtonState();
@@ -40,7 +45,11 @@ class CustomButton extends StatefulWidget {
 class _CustomButtonState extends State<CustomButton> {
   bool get isTextButton => widget.text != null;
 
-  Color get currentTextColor => currentButtonColor == widget.buttonInactiveColor
+  Function get onPress => widget.onPress ?? () {};
+
+  bool get disabled => widget.onPress == null;
+
+  Color get currentTextColor => currentButtonColor == widget.buttonInactiveColor && !disabled
       ? widget.buttonActiveColor
       : widget.buttonInactiveColor;
   Color currentButtonColor;
@@ -57,13 +66,13 @@ class _CustomButtonState extends State<CustomButton> {
     return GestureDetector(
         onTapDown: (_) {
           _updateColorTo(widget.buttonActiveColor);
-          widget.onPress();
+          onPress();
 
           buttonHeldTimer?.cancel();
           // debounce the first press
-          buttonHeldTimer = Timer.periodic(Duration(milliseconds: 500), (timer) {
+          buttonHeldTimer = Timer.periodic(Duration(milliseconds: 300), (timer) {
             buttonHeldTimer.cancel();
-            buttonHeldTimer = Timer.periodic(Duration(milliseconds: 300), (_) => widget.onPress());
+            buttonHeldTimer = Timer.periodic(Duration(milliseconds: 100), (_) => onPress());
           });
         },
         onTapUp: (_) {
@@ -78,21 +87,23 @@ class _CustomButtonState extends State<CustomButton> {
   Widget _buildTextButton() {
     return Container(
         decoration: BoxDecoration(
-          color: currentButtonColor,
+          color: disabled ? widget.buttonDisabledColor : currentButtonColor,
           border: Border.all(color: Colors.black),
         ),
         child: Center(
             child: Text(widget.text,
-                style: TextStyle(fontSize: widget.textSize, color: currentTextColor, fontWeight: FontWeight.bold))));
+                style: TextStyle(
+                    fontSize: widget.textSize,
+                    color: currentTextColor,
+                    fontWeight: FontWeight.bold))));
   }
 
   Widget _buildIconButton() {
     return Center(
-      child: Icon(
-        widget.icon,
-        color: currentButtonColor,
-        size: widget.iconSize,
-      )
-    );
+        child: Icon(
+      widget.icon,
+      color: disabled ? widget.buttonDisabledColor : currentButtonColor,
+      size: widget.iconSize,
+    ));
   }
 }

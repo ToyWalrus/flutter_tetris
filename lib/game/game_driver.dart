@@ -8,24 +8,25 @@ import 'package:flutter_tetris/game/tetromino_shapes.dart';
 /// The class responsible for maintaining
 /// state of the game and progressing it
 /// along.
-class GameDriver {
+class GameDriver extends ValueNotifier<Tetromino> {
+  @override
+  Tetromino get value => hasStarted ? _currentPiece : null;
+
   /// How often the grid updates in milliseconds.
   final int tickInterval;
 
   /// The Tetris grid.
   final TetrisGrid grid;
 
-  /// A callback for each time the
-  /// grid or current Tetromino
-  /// have been updated.
-  final Function onUpdate;
-
   /// The player's current score. Each
   /// row clear awards 100 points.
   int get currentScore => _currentScoreInternal;
 
   /// Whether the game is currently running.
-  bool get isActive => _gameTimer?.isActive == true;
+  bool get isActive => _gameTimer?.isActive == true && !_paused;
+
+  bool get hasStarted => _hasStartedInternal;
+  bool _hasStartedInternal;
 
   /// The next shape to be spawned.
   TetrominoShapes nextShape;
@@ -40,36 +41,44 @@ class GameDriver {
   Tetromino _currentPiece;
   int _currentScoreInternal;
   Timer _gameTimer;
-//  Timer _moveActionTimer;
-//  Timer _rotationActionTimer;
+  bool _paused;
   Duration get _tickDuration => Duration(milliseconds: tickInterval);
-//  Duration get _moveActionInterval => Duration(milliseconds: 200);
-//  Duration get _rotationActionInterval => Duration(milliseconds: 100);
 
   /// Create a new `GameDriver` instance. Each `GameDriver`
   /// represents its own game.
-  GameDriver({@required this.onUpdate, @required this.grid, this.tickInterval = 1000}) {
+  GameDriver({@required this.grid, this.tickInterval = 1000}) : super(null) {
     nextShape = _getNextShape();
+    _hasStartedInternal = false;
+    _paused = false;
     _currentPiece = Tetromino(shape: nextShape, gameGrid: grid, spawn: false);
   }
 
   /// To be called when the widget containing
   /// this is disposed.
+  @override
   void dispose() {
     _gameTimer?.cancel();
-//    _moveActionTimer?.cancel();
-//    _rotationActionTimer?.cancel();
+    super.dispose();
   }
 
   void startGame() {
     _currentScoreInternal = 0;
+    _hasStartedInternal = true;
     _spawnNewTetromino();
-    onUpdate();
+    notifyListeners();
   }
 
   void resumeGame() {
     if (!isActive && !gameOver) {
+      _paused = false;
       _gameTimer = Timer.periodic(_tickDuration, _onTick);
+    }
+  }
+
+  void pauseGame() {
+    if (isActive && !gameOver) {
+      _gameTimer.cancel();
+      _paused = true;
     }
   }
 
@@ -82,28 +91,28 @@ class GameDriver {
   void movePieceRight() {
     if (gameOver) return;
     if (_currentPiece.moveRight()) {
-      onUpdate();
+      notifyListeners();
     }
   }
 
   void movePieceLeft() {
     if (gameOver) return;
     if (_currentPiece.moveLeft()) {
-      onUpdate();
+      notifyListeners();
     }
   }
 
   void rotatePieceRight() {
     if (gameOver) return;
     if (_currentPiece.rotateRight()) {
-      onUpdate();
+      notifyListeners();
     }
   }
 
   void rotatePieceLeft() {
     if (gameOver) return;
     if (_currentPiece.rotateLeft()) {
-      onUpdate();
+      notifyListeners();
     }
   }
 
@@ -117,15 +126,13 @@ class GameDriver {
   }
 
   void _movePieceDownInternal() {
-    print('Move ${_currentPiece.shape} piece down');
     final couldMoveDown = _currentPiece.moveDown();
     if (!couldMoveDown) {
-      print('Reached bottom');
       grid.addBlocks(_currentPiece);
       _spawnNewTetromino();
       _clearCompletedRows();
     }
-    onUpdate();
+    notifyListeners();
   }
 
   void _clearCompletedRows() {

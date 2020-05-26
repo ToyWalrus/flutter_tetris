@@ -5,23 +5,23 @@ import 'package:flutter_tetris/game/tetromino.dart';
 
 class TetrisPainter extends CustomPainter {
   final TetrisGrid grid;
-  final Tetromino currentPiece;
+  final ValueNotifier<Tetromino> notifier;
   final Color backgroundColor;
   final double blockSizeFractionOfCell;
 
   TetrisPainter({
     @required this.grid,
-    @required this.currentPiece,
+    @required this.notifier,
     @required this.backgroundColor,
     this.blockSizeFractionOfCell = 0.9
-  });
+  }) : super(repaint: notifier);
 
   @override
   void paint(Canvas canvas, Size canvasSize) {
     final cellWidth = canvasSize.width / grid.width;
     final cellHeight = canvasSize.height / grid.height;
     final cellSize = Size(cellWidth, cellHeight);
-    final blockSize = cellSize * blockSizeFractionOfCell; // Size(cellSize.width * blockSizeFractionOfCell, cellSize.height * blockSizeFractionOfCell);
+    final blockSize = cellSize * blockSizeFractionOfCell;
 
     // Sets the canvas so that (0,0) is bottom left
     canvas.translate(0, canvasSize.height);
@@ -29,7 +29,9 @@ class TetrisPainter extends CustomPainter {
 
     _drawBackground(canvas, canvasSize, cellSize);
     _drawGrid(canvas, cellSize, blockSize);
-    _drawCurrentPiece(canvas, cellSize, blockSize);
+    if (notifier != null) {
+      _drawCurrentPiece(canvas, cellSize, blockSize);
+    }
   }
 
   void _drawGrid(Canvas canvas, Size cellSize, Size blockSize) {
@@ -50,7 +52,7 @@ class TetrisPainter extends CustomPainter {
   void _drawCurrentPiece(Canvas canvas, Size cellSize, Size blockSize) {
     final cellCenterOffsetX = cellSize.width / 2;
     final cellCenterOffsetY = cellSize.height / 2;
-    for (final block in currentPiece.blocks) {
+    for (final block in notifier.value.blocks) {
       final cellCenterX = cellSize.width * block.x + cellCenterOffsetX;
       final cellCenterY = cellSize.height * block.y + cellCenterOffsetY;
       _drawBlock(canvas, block, cellCenterX, cellCenterY, blockSize);
@@ -72,8 +74,6 @@ class TetrisPainter extends CustomPainter {
   void _drawBackground(Canvas canvas, Size canvasSize, Size cellSize) {
     canvas.drawColor(backgroundColor, BlendMode.src);
 
-    final numVerticalLines = grid.width - 1;
-    final numHorizontalLines = grid.height - 1;
     final lineStroke = Paint()
       ..strokeWidth = 1
       ..color = Colors.black87;
@@ -82,21 +82,8 @@ class TetrisPainter extends CustomPainter {
     canvas.drawLine(Offset(canvasSize.width, 0), Offset(canvasSize.width, canvasSize.height), lineStroke);
     canvas.drawLine(Offset(canvasSize.width, canvasSize.height), Offset(0, canvasSize.height), lineStroke);
     canvas.drawLine(Offset(0,canvasSize.height), Offset(0, 0), lineStroke);
-
-//    for (int i = 0; i < numVerticalLines + 1; ++i) {
-//      final xOffset = cellSize.width * i;
-//      canvas.drawLine(Offset(xOffset, 0), Offset(xOffset, canvasSize.height), lineStroke);
-//    }
-//
-//    for (int i = 0; i < numHorizontalLines + 1; ++i) {
-//      final yOffset = cellSize.height * i;
-//      canvas.drawLine(Offset(0, yOffset), Offset(canvasSize.width, yOffset), lineStroke);
-//    }
   }
 
   @override
-  bool shouldRepaint(TetrisPainter oldPainter) => 
-    currentPiece != oldPainter.currentPiece || 
-    grid.isDifferentThan(oldPainter.grid) ||
-    backgroundColor != oldPainter.backgroundColor;
+  bool shouldRepaint(TetrisPainter oldPainter) => true;
 }
